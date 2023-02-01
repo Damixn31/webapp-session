@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
-@WebServlet("/actualizar-carro")
+@WebServlet("/carro/actualizar")
 public class ActualizarCarroServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -23,7 +23,7 @@ public class ActualizarCarroServlet extends HttpServlet {
             updateProductos(req, carro);
             updateCantidades(req, carro);
         }
-        resp.sendRedirect(req.getContextPath() + "/ver-carro");
+        resp.sendRedirect(req.getContextPath() + "/carro/ver");
     }
 
     private void updateProductos(HttpServletRequest request, Carro carro) {
@@ -37,7 +37,9 @@ public class ActualizarCarroServlet extends HttpServlet {
 
     private void updateCantidades(HttpServletRequest request, Carro carro) {
         Enumeration<String> enumer = request.getParameterNames();
-
+        //Iteramos a traves de los parametros y buscamos los que empiezan con
+        // "cant_" el campo cant en la vista fueron nombrados "cant_" + productosId
+        // obtenemos el id de cada producto y su correspondiente cantidad
         while (enumer.hasMoreElements()) {
             String paramName = enumer.nextElement();
             if (paramName.startsWith("cant_")) {
