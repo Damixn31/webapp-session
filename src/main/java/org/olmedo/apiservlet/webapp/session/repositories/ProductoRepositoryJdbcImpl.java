@@ -1,5 +1,6 @@
 package org.olmedo.apiservlet.webapp.session.repositories;
 
+import org.olmedo.apiservlet.webapp.session.models.Categoria;
 import org.olmedo.apiservlet.webapp.session.models.Producto;
 
 import java.sql.*;
@@ -17,9 +18,9 @@ public class ProductoRepositoryJdbcImpl implements Repository<Producto> {
     public List<Producto> listar() throws SQLException {
         List<Producto> productos = new ArrayList<>();
         try (Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT p.*, c.nombre as categoria FROM productos as p " +
-                    " inner join categorias as c ON (p.categoria_id = c.id)")) {
-            while(rs.next()) {
+             ResultSet rs = stmt.executeQuery("SELECT p.*, c.nombre as categoria FROM productos as p " +
+                     " inner join categorias as c ON (p.categoria_id = c.id)")) {
+            while (rs.next()) {
                 Producto p = getProducto(rs);
 
                 productos.add(p);
@@ -28,15 +29,16 @@ public class ProductoRepositoryJdbcImpl implements Repository<Producto> {
 
         return productos;
     }
+
     @Override
     public Producto porId(Long id) throws SQLException {
         Producto producto = null;
-        try(PreparedStatement stmt = conn.prepareStatement("SELECT p.*, c.nombre as categoria FROM productos as p " +
+        try (PreparedStatement stmt = conn.prepareStatement("SELECT p.*, c.nombre as categoria FROM productos as p " +
                 " inner join categorias as c ON (p.categoria_id = c.id) WHERE p.id = ?")) {
             stmt.setLong(1, id);
 
             // esto para que se auto cierren los recursos
-            try(ResultSet rs = stmt.executeQuery()) {
+            try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     producto = getProducto(rs);
                 }
@@ -48,11 +50,34 @@ public class ProductoRepositoryJdbcImpl implements Repository<Producto> {
     @Override
     public void guardar(Producto producto) throws SQLException {
 
+        String sql;
+        if (producto.getId() != null && producto.getId() > 0) {
+            sql = "update productos set nombre=?, precio=?, sku=?, categoria_id=? where id=?";
+        } else {
+            sql = "insert into producto (nombre, precio, sku, categoria_id, fecha_registro) values(?,?,?,?,?)";
+        }
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, producto.getNombre());
+            stmt.setInt(2, producto.getPrecio());
+            stmt.setString(3, producto.getSku());
+            stmt.setLong(4, producto.getCategoria().getId());
+
+            if (producto.getId() != null && producto.getId() > 0) {
+                stmt.setLong(5, producto.getId());
+            } else {
+                stmt.setDate(5, Date.valueOf(producto.getFechaRegistro())); //aca convertimos porque la fecha viene de tipo Localdate lo conviermos a una fecha java.sql
+            }
+            stmt.executeUpdate();
+        }
     }
 
     @Override
     public void eliminar(Long id) throws SQLException {
-
+        String sql = "delete from producto where id=?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+             stmt.setLong(1, id);
+             stmt.executeUpdate();
+        }
     }
 
     // metodos
@@ -61,7 +86,12 @@ public class ProductoRepositoryJdbcImpl implements Repository<Producto> {
         p.setId(rs.getLong("id"));
         p.setNombre(rs.getString("nombre"));
         p.setPrecio(rs.getInt("precio"));
-        p.setTipo(rs.getString("categoria"));
+        p.setSku(rs.getString("sku"));
+        p.setFechaRegistro(rs.getDate("fecha_registro").toLocalDate()); // convierte la fecha en localDate
+        Categoria c = new Categoria();
+        c.setId(rs.getLong("categoria_id"));
+        c.setNombre(rs.getString("categoria"));
+        p.setCategoria(c);
         return p;
     }
 }
