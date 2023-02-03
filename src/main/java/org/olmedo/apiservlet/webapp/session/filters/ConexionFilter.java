@@ -26,7 +26,7 @@ public class ConexionFilter implements Filter {
              // ServiceJdbcException es como un puente de comunicacion entre la clase serive y la clase conexionFilter para que realize el rollback
          } catch(SQLException | ServiceJdbcException e) {
              conn.rollback();
-             ((HttpServletResponse)servletRequest).sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
+             ((HttpServletResponse)servletResponse).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
              e.printStackTrace();
          }
         } catch (SQLException throwables) {

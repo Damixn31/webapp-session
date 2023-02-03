@@ -32,7 +32,7 @@ public class ProductoRepositoryJdbcImpl implements Repository<Producto> {
     public Producto porId(Long id) throws SQLException {
         Producto producto = null;
         try(PreparedStatement stmt = conn.prepareStatement("SELECT p.*, c.nombre as categoria FROM productos as p " +
-                " inner join categoria as c ON (p.categoria_id = c.id) WHERE p.id = ?")) {
+                " inner join categorias as c ON (p.categoria_id = c.id) WHERE p.id = ?")) {
             stmt.setLong(1, id);
 
             // esto para que se auto cierren los recursos
