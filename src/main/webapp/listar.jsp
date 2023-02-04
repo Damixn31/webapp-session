@@ -15,6 +15,7 @@
 <h1>Listado de productos</h1>
 <% if(username.isPresent()){%>
 <div>Hola <%=username.get()%>, Bienvenido!</div>
+<p><a href="<%=request.getContextPath()%>/productos/form">crear [+]</a></p>
 <%}%>
 <table>
     <tr>
