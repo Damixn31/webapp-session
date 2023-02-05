@@ -17,9 +17,10 @@ public class ProductoRepositoryJdbcImpl implements Repository<Producto> {
     @Override
     public List<Producto> listar() throws SQLException {
         List<Producto> productos = new ArrayList<>();
+
         try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT p.*, c.nombre as categoria FROM productos as p " +
-                     " inner join categorias as c ON (p.categoria_id = c.id)")) {
+                     " inner join categorias as c ON (p.categoria_id = c.id) order by p.id ASC")) {
             while (rs.next()) {
                 Producto p = getProducto(rs);
 
@@ -54,7 +55,7 @@ public class ProductoRepositoryJdbcImpl implements Repository<Producto> {
         if (producto.getId() != null && producto.getId() > 0) {
             sql = "update productos set nombre=?, precio=?, sku=?, categoria_id=? where id=?";
         } else {
-            sql = "insert into producto (nombre, precio, sku, categoria_id, fecha_registro) values(?,?,?,?,?)";
+            sql = "insert into productos (nombre, precio, sku, categoria_id, fecha_registro) values(?,?,?,?,?)";
         }
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, producto.getNombre());
