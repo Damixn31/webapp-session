@@ -67,7 +67,8 @@ producto.getFechaRegistro().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : 
         <%}%>
   </div>
 
- <div><input type="submit" value="Crear"></div>
+ <div><input type="submit" value="<%=(producto.getId() != null && producto.getId() > 0) ? "Editar" : "Crear"%>"></div>
+ <input type="hidden" name="id" value="<%=producto.getId()%>">
 </form>
 </body>
 </html>

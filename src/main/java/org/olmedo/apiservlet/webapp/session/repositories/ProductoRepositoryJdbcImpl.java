@@ -74,7 +74,7 @@ public class ProductoRepositoryJdbcImpl implements Repository<Producto> {
 
     @Override
     public void eliminar(Long id) throws SQLException {
-        String sql = "delete from producto where id=?";
+        String sql = "delete from productos where id=?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
              stmt.setLong(1, id);
              stmt.executeUpdate();

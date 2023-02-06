@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,10 +27,9 @@ public class ProductoFormServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Connection conn = (Connection) req.getAttribute("conn");
         ProductoService service = new ProductoServiceJdbcImpl(conn);
-        req.setAttribute("categorias", service.listarCategoria());
-        Long id;
+        long id;
         try {
-          id = Long.valueOf(req.getParameter("id")); // obtengo el id para editar
+            id = Long.parseLong(req.getParameter("id")); // obtengo el id para editar
         } catch (NumberFormatException e) {
             id = 0L; // si es null asignamos el id a 0
         }
@@ -42,6 +42,7 @@ public class ProductoFormServlet extends HttpServlet {
                 producto = o.get();
             }
         }
+        req.setAttribute("categorias", service.listarCategoria());
         req.setAttribute("producto", producto);
         getServletContext().getRequestDispatcher("/form.jsp").forward(req, resp);
 
@@ -89,30 +90,47 @@ public class ProductoFormServlet extends HttpServlet {
         if (precio.equals(0)) {
             errores.put("precio", "El precio es requerido!");
         }
-        if (categoriaId.equals(0)) {
+        if (categoriaId.equals(0L)) {
             errores.put("categoria", "La categoria es requerida!");
         }
+        // para que el formulario cuando tenemos un error y falla la validacion vuelva a cargar informacion, no se pierdan los datos ingresados
+        LocalDate fecha;
+        try {
+            fecha = LocalDate.parse(fechaStr, DateTimeFormatter.ofPattern("yyyy-MM-dd")); // convertimos la fecha en un LocalDate para poder usarla
+        } catch (DateTimeParseException e) {
+            fecha = null;
+        }
+        // el hidden que esta en el form.jsp es como una bandera esto es un switch entre el insert y el update de manera automatica vamos a saber cual hacer si una o la otra siempre realizando el mismo formulario
+        long id;
+        try {
+            id = Long.parseLong(req.getParameter("id"));
+        } catch (NumberFormatException e) {
+            id = 0L;
+        }
+        Producto producto = new Producto();
+        producto.setId(id);
+        producto.setNombre(nombre);
+        producto.setSku(sku);
+        producto.setPrecio(precio);
+        producto.setFechaRegistro(fecha);
+
+        Categoria categoria = new Categoria();
+        categoria.setId(categoriaId);
+        // ahora pasamos la catetoria al producto
+        producto.setCategoria(categoria);
+
         if (errores.isEmpty()) {
-
-            LocalDate fecha = LocalDate.parse(fechaStr, DateTimeFormatter.ofPattern("yyyy-MM-dd")); // convertimos la fecha en un LocalDate para poder usarla
-            Producto producto = new Producto();
-            producto.setNombre(nombre);
-            producto.setSku(sku);
-            producto.setPrecio(precio);
-            producto.setFechaRegistro(fecha);
-
-            Categoria categoria = new Categoria();
-            categoria.setId(categoriaId);
-            // ahora pasamos la catetoria al producto
-            producto.setCategoria(categoria);
-
             //guadamos el producto creado mediante el service
             service.guardar(producto);
             //para que no vuelva a dupicar los datos con un refresh de la pagina usamos el sendRedirect para que nos vuelva a redirigir a otra pagina
             resp.sendRedirect(req.getContextPath() + "/productos");
         } else {
             req.setAttribute("errores", errores);
-            doGet(req, resp); // volvemos a invocar el doGet para volver a mostrar el formulario
+            // cuando falla la validacion pasamos la categoria, producto y volvemos cagar vista de form
+            req.setAttribute("categorias", service.listarCategoria());
+            req.setAttribute("producto", producto);
+            getServletContext().getRequestDispatcher("/form.jsp").forward(req, resp);
+
         }
     }
 }
