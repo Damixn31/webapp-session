@@ -3,18 +3,16 @@ package org.olmedo.apiservlet.webapp.session.controllers;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import org.olmedo.apiservlet.webapp.session.service.LoginService;
-import org.olmedo.apiservlet.webapp.session.service.LoginServiceCookieImpl;
-import org.olmedo.apiservlet.webapp.session.service.LoginServiceSessionImpl;
+import org.olmedo.apiservlet.webapp.session.models.Usuario;
+import org.olmedo.apiservlet.webapp.session.service.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
 import java.util.Optional;
 
 @WebServlet({"/login", "/login.html"})
 public class LoginServlet extends HttpServlet {
-    final static String USERNAME = "admin";
-    final static String PASSWORD = "12345";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -48,7 +46,10 @@ public class LoginServlet extends HttpServlet {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
 
-        if (USERNAME.equals(username) && PASSWORD.equals(password)) {
+        UsuarioService service = new UsuarioServiceImpl((Connection) req.getAttribute("conn")); // aca obtenemos la coneccion del request
+        Optional<Usuario> usuarioOptional = service.login(username, password);
+
+        if (usuarioOptional.isPresent()) { // si el usuario existe se inicia session corectamente
 
             HttpSession session = req.getSession(); //obtenemos la sessiony se genera de manera automatica
             session.setAttribute("username", username);
