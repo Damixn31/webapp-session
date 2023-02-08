@@ -28,6 +28,7 @@ public class AplicacionListener implements ServletContextListener, ServletReques
     public void requestInitialized(ServletRequestEvent sre) {
         servletContext.log("Inicializando el request!");
         sre.getServletRequest().setAttribute("mensaje", "guardando algun valor para el request");
+        sre.getServletRequest().setAttribute("title", "Catalogo Servlet"); //modifica el titulo en cada pagina
     }
 
     @Override

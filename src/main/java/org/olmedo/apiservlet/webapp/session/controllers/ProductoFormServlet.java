@@ -44,6 +44,7 @@ public class ProductoFormServlet extends HttpServlet {
         }
         req.setAttribute("categorias", service.listarCategoria());
         req.setAttribute("producto", producto);
+        req.setAttribute("title", req.getAttribute("title") + ": Formulario de productos"); // para modificar cada titulo que lo pasamos por el Aplicacionlistener
         getServletContext().getRequestDispatcher("/form.jsp").forward(req, resp);
 
     }
@@ -129,6 +130,7 @@ public class ProductoFormServlet extends HttpServlet {
             // cuando falla la validacion pasamos la categoria, producto y volvemos cagar vista de form
             req.setAttribute("categorias", service.listarCategoria());
             req.setAttribute("producto", producto);
+            req.setAttribute("title", req.getAttribute("title") + ": Formulario de productos"); // para modificar cada titulo que lo pasamos por el Aplicacionlistener
             getServletContext().getRequestDispatcher("/form.jsp").forward(req, resp);
 
         }

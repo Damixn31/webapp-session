@@ -32,12 +32,13 @@ public class LoginServlet extends HttpServlet {
             out.println("     </head>");
             out.println("     <body>");
             out.println("           <h1>Hola " + usernameOptional.get() + " has iniciado sesion con exito!</h1>");
-            out.println("<p><a href='" + req.getContextPath() + "/index.html'>Volver</a></p>");
+            out.println("<p><a href='" + req.getContextPath() + "/index.jsp'>Volver</a></p>");
             out.println("<p><a href='" + req.getContextPath() + "/logout'>Cerrar sesion</a></p>");
             out.println("      </body>");
             out.println("</html>");
             out.close();
         } else {
+            req.setAttribute("title", req.getAttribute("title") + ": Login"); // para modificar cada titulo que lo pasamos por el Aplicacionlistener
             getServletContext().getRequestDispatcher("/login.jsp").forward(req, resp);
         }
 

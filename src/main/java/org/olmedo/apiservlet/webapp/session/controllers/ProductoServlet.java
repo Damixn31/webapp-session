@@ -28,6 +28,7 @@ public class ProductoServlet extends HttpServlet {
 
         req.setAttribute("productos", productos); // productos le pasamos el mismo nombre que lo estamos recibiendo en la lista.jsp
         req.setAttribute("username", usernameOptional);
+        req.setAttribute("title", req.getAttribute("title") + ": Listado de productos"); // para modificar cada titulo que lo pasamos por el Aplicacionlistener
         getServletContext().getRequestDispatcher("/listar.jsp").forward(req,resp);
     }
 }
