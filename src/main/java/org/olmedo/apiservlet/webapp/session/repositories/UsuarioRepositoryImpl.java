@@ -1,18 +1,20 @@
 package org.olmedo.apiservlet.webapp.session.repositories;
 
+import jakarta.inject.Inject;
+import org.olmedo.apiservlet.webapp.session.configs.MysqlConn;
+import org.olmedo.apiservlet.webapp.session.configs.Repository;
 import org.olmedo.apiservlet.webapp.session.models.Usuario;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+//cada cliente que se conecta va a tener su propia coneccion y toda las transacciones no se van a ver afectadas
+@Repository
 public class UsuarioRepositoryImpl implements UsuarioRepository{
+    @Inject
+    @MysqlConn
     private Connection conn;
-
-    //esta coneccion es importante para poder conectar los metodos de abajo
-    public UsuarioRepositoryImpl(Connection conn) {
-        this.conn = conn;
-    }
 
     //metodos
     @Override

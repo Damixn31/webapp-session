@@ -1,10 +1,13 @@
 package org.olmedo.apiservlet.webapp.session.controllers;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.olmedo.apiservlet.webapp.session.configs.ProductoServicePrincipal;
 import org.olmedo.apiservlet.webapp.session.models.Producto;
 import org.olmedo.apiservlet.webapp.session.service.ProductoService;
 import org.olmedo.apiservlet.webapp.session.service.ProductoServiceJdbcImpl;
@@ -15,11 +18,12 @@ import java.util.Optional;
 
 @WebServlet("/productos/eliminar")
 public class ProductoEliminarServlet extends HttpServlet {
+    @Inject
+    @ProductoServicePrincipal
+    private ProductoService service;
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        Connection conn = (Connection) req.getAttribute("conn");
-        ProductoService service = new ProductoServiceJdbcImpl(conn);
         long id;
         try {
             id = Long.parseLong(req.getParameter("id"));

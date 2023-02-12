@@ -1,17 +1,36 @@
 package org.olmedo.apiservlet.webapp.session.repositories;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
+import org.olmedo.apiservlet.webapp.session.configs.MysqlConn;
+import org.olmedo.apiservlet.webapp.session.configs.Repository;
 import org.olmedo.apiservlet.webapp.session.models.Categoria;
 import org.olmedo.apiservlet.webapp.session.models.Producto;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
-public class ProductoRepositoryJdbcImpl implements Repository<Producto> {
+//cada cliente que se conecta va a tener su propia coneccion y toda las transacciones no se van a ver afectadas
+@Repository
+public class ProductoRepositoryJdbcImpl implements CrudRepository<Producto> {
+
+    @Inject
+    private Logger log;
+    @Inject
+    @MysqlConn
     private Connection conn;
 
-    public ProductoRepositoryJdbcImpl(Connection conn) {
-        this.conn = conn;
+    @PostConstruct
+    public void inicializar(){
+        log.info("Inicializando el beans " + this.getClass().getName());
+    }
+
+    @PreDestroy
+    public void destruir(){
+        log.info("Destruyendo el beans " + this.getClass().getName());
     }
 
     @Override

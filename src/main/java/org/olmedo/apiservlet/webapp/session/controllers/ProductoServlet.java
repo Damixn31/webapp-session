@@ -1,28 +1,33 @@
 package org.olmedo.apiservlet.webapp.session.controllers;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.olmedo.apiservlet.webapp.session.configs.ProductoServicePrincipal;
 import org.olmedo.apiservlet.webapp.session.models.Producto;
 import org.olmedo.apiservlet.webapp.session.service.*;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
 import java.util.List;
 import java.util.Optional;
 
 @WebServlet({"/productos.html", "/productos"}) //url enlasadas
 public class ProductoServlet extends HttpServlet {
+    @Inject
+    @ProductoServicePrincipal
+    private ProductoService service;
+    @Inject
+    private LoginService auth;
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Connection conn = (Connection) req.getAttribute("conn"); // para hacer la coneccion con la base de datos
-        ProductoService service = new ProductoServiceJdbcImpl(conn);
+
         List<Producto> productos = service.listar();
 
-        LoginService auth = new LoginServiceSessionImpl();
+
         Optional<String> usernameOptional = auth.getUsername(req);
 
 

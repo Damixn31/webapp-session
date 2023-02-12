@@ -1,16 +1,31 @@
 package org.olmedo.apiservlet.webapp.session.models;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
+import org.olmedo.apiservlet.webapp.session.configs.CarroCompra;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
-public class Carro {
+@CarroCompra
+public class Carro  implements Serializable { // siempre tiene que tener implementado el Serializable en las inyecciones
     private List<ItemCarro> items;
+    @Inject
+    private transient Logger log; // el logger no es Serializable por lo tanto no es compatible por eso se le agreaa el modficador transient: de esta forma el log no farma parte de la session del carro
 
-    public Carro() {
+    @PostConstruct // esto es como un constructor
+    public void inicializar(){
         this.items = new ArrayList<>();
+        log.info("Inicializando el carro de compras!");
     }
-
+    @PreDestroy
+    public void destruir(){
+        log.info("destruyendo el carro de compras!");
+    }
     public void addItemCarro(ItemCarro itemCarro) {
         if(items.contains(itemCarro)) {
             Optional<ItemCarro> optionalItemCarro = items.stream()

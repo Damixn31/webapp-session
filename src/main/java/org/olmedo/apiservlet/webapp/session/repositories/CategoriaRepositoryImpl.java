@@ -1,15 +1,22 @@
 package org.olmedo.apiservlet.webapp.session.repositories;
 
+import jakarta.inject.Inject;
+import org.olmedo.apiservlet.webapp.session.configs.MysqlConn;
+import org.olmedo.apiservlet.webapp.session.configs.Repository;
 import org.olmedo.apiservlet.webapp.session.models.Categoria;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoriaRepositoryImpl implements Repository<Categoria> {
+//cada cliente que se conecta va a tener su propia coneccion y toda las transacciones no se van a ver afectadas
+@Repository
+public class CategoriaRepositoryImpl implements CrudRepository<Categoria> {
     private Connection conn;
 
-    public CategoriaRepositoryImpl(Connection conn) {
+    // esta es otra forma es inyectar dentro del contrusctor
+    @Inject
+    public CategoriaRepositoryImpl(@MysqlConn Connection conn) {
         this.conn = conn;
     }
 

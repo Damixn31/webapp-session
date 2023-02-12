@@ -1,5 +1,6 @@
 package org.olmedo.apiservlet.webapp.session.controllers.usuarios;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -7,20 +8,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.olmedo.apiservlet.webapp.session.models.Usuario;
 import org.olmedo.apiservlet.webapp.session.service.UsuarioService;
-import org.olmedo.apiservlet.webapp.session.service.UsuarioServiceImpl;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 @WebServlet("/usuarios/form")
 public class UsuarioFormServlet extends HttpServlet {
+    @Inject
+    private UsuarioService service;
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Connection conn = (Connection) req.getAttribute("conn");
-        UsuarioService service = new UsuarioServiceImpl(conn);
+
         long id;
         try {
             id = Long.parseLong(req.getParameter("id"));
@@ -44,9 +44,6 @@ public class UsuarioFormServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        Connection conn = (Connection) req.getAttribute("conn");
-        UsuarioService service = new UsuarioServiceImpl(conn);
 
         long id;
         try {

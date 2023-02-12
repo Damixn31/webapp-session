@@ -1,19 +1,23 @@
 package org.olmedo.apiservlet.webapp.session.service;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import org.olmedo.apiservlet.webapp.session.configs.Service;
 import org.olmedo.apiservlet.webapp.session.models.Usuario;
 import org.olmedo.apiservlet.webapp.session.repositories.UsuarioRepository;
-import org.olmedo.apiservlet.webapp.session.repositories.UsuarioRepositoryImpl;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+//cada cliente que se conecta va a tener su propia coneccion y toda las transacciones no se van a ver afectadas
+@Service
 public class UsuarioServiceImpl implements UsuarioService{
     private UsuarioRepository usuarioRepository;
 
-    public UsuarioServiceImpl(Connection connection) {
-        this.usuarioRepository = new UsuarioRepositoryImpl(connection); // estamos inicializando con la coneccion de la base de datos
+    @Inject
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository) { //@named no va porque tenemos una sola implementacion UsuarioRepository va a inyectar la primera que encuentre en este caso UsuarioServiceImpl
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override

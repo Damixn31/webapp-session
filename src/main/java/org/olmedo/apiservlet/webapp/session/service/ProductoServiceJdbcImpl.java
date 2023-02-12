@@ -1,24 +1,26 @@
 package org.olmedo.apiservlet.webapp.session.service;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import org.olmedo.apiservlet.webapp.session.configs.ProductoServicePrincipal;
+import org.olmedo.apiservlet.webapp.session.configs.Service;
+import org.olmedo.apiservlet.webapp.session.interceptors.Logging;
 import org.olmedo.apiservlet.webapp.session.models.Categoria;
 import org.olmedo.apiservlet.webapp.session.models.Producto;
-import org.olmedo.apiservlet.webapp.session.repositories.CategoriaRepositoryImpl;
-import org.olmedo.apiservlet.webapp.session.repositories.ProductoRepositoryJdbcImpl;
-import org.olmedo.apiservlet.webapp.session.repositories.Repository;
+import org.olmedo.apiservlet.webapp.session.repositories.CrudRepository;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+//cada cliente que se conecta va a tener su propia coneccion y toda las transacciones no se van a ver afectadas
+@Service
+@ProductoServicePrincipal // el dia de mania que cambie la implementacion siemplemente movemos esta implementacion en la otra clase que vamos a usar
 public class ProductoServiceJdbcImpl implements ProductoService{
-    private Repository<Producto> repositoryJdbc; //le pasamos Repository<Producto> para que sea del generico
-    private Repository<Categoria> repositoryCategoriaJdbc; //le pasamos Repository<Categoria> para que sea del generico
-
-    public ProductoServiceJdbcImpl(Connection connection) {
-        this.repositoryJdbc = new ProductoRepositoryJdbcImpl(connection);
-        this.repositoryCategoriaJdbc = new CategoriaRepositoryImpl(connection);
-    }
+    @Inject
+    private CrudRepository<Producto> repositoryJdbc; //le pasamos Repository<Producto> para que sea del generico
+    @Inject
+    private CrudRepository<Categoria> repositoryCategoriaJdbc; //le pasamos Repository<Categoria> para que sea del generico
 
     @Override
     public List<Producto> listar() {

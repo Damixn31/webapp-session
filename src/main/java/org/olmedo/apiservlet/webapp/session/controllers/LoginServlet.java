@@ -1,5 +1,6 @@
 package org.olmedo.apiservlet.webapp.session.controllers;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -8,15 +9,19 @@ import org.olmedo.apiservlet.webapp.session.service.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
 import java.util.Optional;
 
 @WebServlet({"/login", "/login.html"})
 public class LoginServlet extends HttpServlet {
+    @Inject
+    private UsuarioService service;
+
+    @Inject
+    private LoginService auth;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        LoginService auth = new LoginServiceSessionImpl();
+
         Optional<String> usernameOptional = auth.getUsername(req);
 
         if(usernameOptional.isPresent()) {
@@ -46,7 +51,6 @@ public class LoginServlet extends HttpServlet {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
 
-        UsuarioService service = new UsuarioServiceImpl((Connection) req.getAttribute("conn")); // aca obtenemos la coneccion del request
         Optional<Usuario> usuarioOptional = service.login(username, password);
 
         if (usuarioOptional.isPresent()) { // si el usuario existe se inicia session corectamente

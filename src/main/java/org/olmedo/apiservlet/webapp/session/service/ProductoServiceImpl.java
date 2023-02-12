@@ -1,12 +1,13 @@
 package org.olmedo.apiservlet.webapp.session.service;
 
+import jakarta.enterprise.inject.Alternative;
 import org.olmedo.apiservlet.webapp.session.models.Categoria;
 import org.olmedo.apiservlet.webapp.session.models.Producto;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
+//@Alternative // el alternative es como excluir de la inyeccion otra forma es tambien con la anotaciones hacer las inyecciones especificas
 public class ProductoServiceImpl implements ProductoService{
 
     @Override
